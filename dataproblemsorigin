@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Problem Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .card-gradient-1 { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); }
+        .card-gradient-2 { background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%); }
+        .card-gradient-3 { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+        
+        .habit-pulse {
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        .interactive-row:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-slate-800 mb-4">Where Do Data Problems Enter?</h1>
+            <p class="text-lg text-slate-600">Explore the common pitfalls in the data lifecycle and how to prevent them.</p>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            
+            <!-- Stage 1: Collection -->
+            <div class="card-gradient-1 rounded-2xl p-6 text-white shadow-xl transform transition hover:-translate-y-1">
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2003/svg" class="h-8 w-8 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <h2 class="text-2xl font-bold">Collection</h2>
+                </div>
+                <p class="text-indigo-100 text-sm mb-6">The "Garbage In, Garbage Out" stage.</p>
+                
+                <div class="space-y-4">
+                    <div class="p-3 bg-white/10 rounded-lg interactive-row" onclick="showExample('Inconsistent Categories', 'Male / M / m / 1', 'Causes grouping errors in pivot tables.')">
+                        <p class="font-semibold text-sm">Inconsistent Categories</p>
+                        <p class="text-xs text-indigo-200">Typos & varying formats</p>
+                    </div>
+                    <div class="p-3 bg-white/10 rounded-lg interactive-row" onclick="showExample('Ambiguous Missing Values', '0 vs NA vs Blank', 'Is 0 a real measurement or a placeholder?')">
+                        <p class="font-semibold text-sm">Missing Values</p>
+                        <p class="text-xs text-indigo-200">Recorded as 0 or empty</p>
+                    </div>
+                    <div class="p-3 bg-white/10 rounded-lg interactive-row" onclick="showExample('Unit Confusion', 'cm vs m | £ vs $', 'A 100cm entry mixed with a 1m entry = 101 unit total.')">
+                        <p class="font-semibold text-sm">Unit Confusion</p>
+                        <p class="text-xs text-indigo-200">Metric vs Imperial / Currencies</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 2: Storage & Transfer -->
+            <div class="card-gradient-2 rounded-2xl p-6 text-white shadow-xl transform transition hover:-translate-y-1">
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2003/svg" class="h-8 w-8 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    <h2 class="text-2xl font-bold">Storage & Transfer</h2>
+                </div>
+                <p class="text-sky-100 text-sm mb-6">Where integrity is often compromised.</p>
+                
+                <div class="space-y-4">
+                    <div class="p-3 bg-white/10 rounded-lg interactive-row" onclick="showExample('Version Control Fail', 'data_final_V2_USE_THIS.csv', 'Overwriting raw files makes errors irreversible.')">
+                        <p class="font-semibold text-sm">Version Chaos</p>
+                        <p class="text-xs text-sky-200">Files overwritten or misnamed</p>
+                    </div>
+                    <div class="p-3 bg-white/10 rounded-lg interactive-row" onclick="showExample('Broken Links', 'Reference Error: C:/Users/John/...', 'Moving a folder breaks Excel or SQL connections.')">
+                        <p class="font-semibold text-sm">Lost Traceability</p>
+                        <p class="text-xs text-sky-200">Broken links / Lost raw data</p>
+                    </div>
+                    <div class="p-3 bg-white/10 rounded-lg interactive-row" onclick="showExample('Encoding Issues', 'MÃ¼ller vs Müller', 'Special characters break during CSV exports.')">
+                        <p class="font-semibold text-sm">Encoding Issues</p>
+                        <p class="text-xs text-sky-200">UTF-8 vs ASCII conflicts</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 3: Cleaning & Analysis -->
+            <div class="card-gradient-3 rounded-2xl p-6 text-white shadow-xl transform transition hover:-translate-y-1">
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2003/svg" class="h-8 w-8 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <h2 class="text-2xl font-bold">Cleaning & Analysis</h2>
+                </div>
+                <p class="text-purple-100 text-sm mb-6">The danger of human intervention.</p>
+                
+                <div class="space-y-4">
+                    <div class="p-3 bg-white/10 rounded-lg interactive-row" onclick="showExample('Join Disasters', 'Cartesian Product Error', 'Wrong merges duplicate rows and inflate totals.')">
+                        <p class="font-semibold text-sm">Wrong Merges</p>
+                        <p class="text-xs text-purple-200">Duplicates and Join issues</p>
+                    </div>
+                    <div class="p-3 bg-white/10 rounded-lg interactive-row" onclick="showExample('Date Ambiguity', '01/02/2026', 'Is it Feb 1st or Jan 2nd? System defaults matter.')">
+                        <p class="font-semibold text-sm">Date Parsing</p>
+                        <p class="text-xs text-purple-200">Inconsistent date formats</p>
+                    </div>
+                    <div class="p-3 bg-white/10 rounded-lg interactive-row" onclick="showExample('Accidental Changes', 'ID Numbers as Scientific Notation', 'Excel turning 123456789 into 1.23E+08.')">
+                        <p class="font-semibold text-sm">Type Changes</p>
+                        <p class="text-xs text-purple-200">Accidental filtering or typing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Modal View (Simple Banner) -->
+        <div id="example-box" class="hidden mb-12 p-6 bg-white border-l-4 border-indigo-500 rounded-r-xl shadow-md">
+            <h3 id="example-title" class="text-xl font-bold text-slate-800"></h3>
+            <div class="flex flex-col md:flex-row md:items-center mt-2">
+                <div class="mr-8">
+                    <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Example</span>
+                    <p id="example-content" class="text-indigo-600 font-mono text-lg"></p>
+                </div>
+                <div class="mt-2 md:mt-0">
+                    <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Impact</span>
+                    <p id="example-impact" class="text-slate-600 italic"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Habits Section -->
+        <section class="bg-white rounded-3xl p-8 shadow-inner border border-slate-100">
+            <h2 class="text-3xl font-bold text-slate-800 mb-8 flex items-center">
+                <span class="bg-green-100 p-2 rounded-lg mr-4">✨</span>
+                Habits to Adopt
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="flex flex-col items-center text-center p-4">
+                    <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4 habit-pulse">
+                        <svg xmlns="http://www.w3.org/2003/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800">Raw Data: Read-Only</h4>
+                    <p class="text-sm text-slate-500 mt-2">Never edit your original source file. Lock it or keep it in a 'raw' folder.</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-4">
+                    <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4 habit-pulse">
+                        <svg xmlns="http://www.w3.org/2003/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800">Clean into New Files</h4>
+                    <p class="text-sm text-slate-500 mt-2">Export your transformations to a new destination. Maintain a clear "Clean" vs "Raw" separation.</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-4">
+                    <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4 habit-pulse">
+                        <svg xmlns="http://www.w3.org/2003/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800">Change Log</h4>
+                    <p class="text-sm text-slate-500 mt-2">Keep a simple text file or script documenting exactly what you changed and why.</p>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="mt-12 text-center text-slate-400 text-sm">
+            <p>Click on any pitfall category above to see a specific example.</p>
+        </footer>
+    </div>
+
+    <script>
+        function showExample(title, content, impact) {
+            const box = document.getElementById('example-box');
+            const titleEl = document.getElementById('example-title');
+            const contentEl = document.getElementById('example-content');
+            const impactEl = document.getElementById('example-impact');
+
+            box.classList.remove('hidden');
+            titleEl.textContent = title;
+            contentEl.textContent = content;
+            impactEl.textContent = impact;
+
+            // Smooth scroll to the example box if on mobile
+            if(window.innerWidth < 768) {
+                box.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>
