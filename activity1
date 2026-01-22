@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Lifecycle Interactive Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .drop-zone-active { background-color: #f0f9ff; border-color: #0ea5e9; }
+        .draggable { cursor: grab; transition: transform 0.2s, opacity 0.2s; }
+        .draggable:active { cursor: grabbing; }
+        .correct { border: 2px solid #22c55e; background-color: #f0fdf4; }
+        .incorrect { border: 2px solid #ef4444; background-color: #fef2f2; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-extrabold text-slate-800 mb-4">Data Lifecycle Explorer</h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                Test your knowledge of the 8-stage data lifecycle! Drag each task into the correct category.
+            </p>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="mb-8 max-w-md mx-auto">
+            <div class="flex justify-between mb-2 text-sm font-medium">
+                <span>Your Progress</span>
+                <span id="score-text">0 / 10 Correct</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5">
+                <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-4 gap-8">
+            <!-- Left: Task List -->
+            <div class="lg:col-span-1">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">1</span>
+                    Tasks
+                </h2>
+                <div id="task-container" class="space-y-3">
+                    <!-- Tasks will be injected here -->
+                </div>
+            </div>
+
+            <!-- Right: Lifecycle Drop Zones -->
+            <div class="lg:col-span-3">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">2</span>
+                    Lifecycle Phases
+                </h2>
+                <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4" id="lifecycle-zones">
+                    <!-- Drop zones will be injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Message -->
+        <div id="completion-modal" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md text-center">
+                <div class="text-5xl mb-4">🎉</div>
+                <h2 class="text-2xl font-bold mb-2">Excellent Work!</h2>
+                <p class="text-slate-600 mb-6">You have mastered the 8 stages of the data lifecycle.</p>
+                <button onclick="resetGame()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const phases = [
+            { id: 'generation', title: 'Generation', desc: 'The creation of new data or identification of existing sources.' },
+            { id: 'collection', title: 'Collection', desc: 'Gathering data from various sources into a central point.' },
+            { id: 'processing', title: 'Processing', desc: 'Cleaning, transforming, and formatting raw data.' },
+            { id: 'storage', title: 'Storage', desc: 'Securely saving data in physical or cloud infrastructure.' },
+            { id: 'management', title: 'Management', desc: 'Governance, metadata tagging, and access control.' },
+            { id: 'analysis', title: 'Analysis', desc: 'Running statistical models or algorithms to find patterns.' },
+            { id: 'visualisation', title: 'Visualisation & Interpretation', desc: 'Creating charts and deriving meaning from results.' },
+            { id: 'archival', title: 'Archival/Destruction', desc: 'Long-term preservation or secure deletion of data.' }
+        ];
+
+        const tasks = [
+            { id: 't1', text: 'Simulating weather patterns to create a synthetic dataset.', phase: 'generation' },
+            { id: 't2', text: 'Conducting field interviews with residents in a local community.', phase: 'collection' },
+            { id: 't3', text: 'Normalising date formats across five different spreadsheets.', phase: 'processing' },
+            { id: 't4', text: 'Configuring a RAID array for a high-capacity server.', phase: 'storage' },
+            { id: 't5', text: 'Defining who has "Read-Only" vs "Admin" permissions for a folder.', phase: 'management' },
+            { id: 't6', text: 'Calculating the standard deviation and p-values of a sample.', phase: 'analysis' },
+            { id: 't7', text: 'Designing a heat map to identify hotspots in the city.', phase: 'visualisation' },
+            { id: 't8', text: 'Using a digital shredder to permanently erase expired sensitive records.', phase: 'archival' },
+            { id: 't9', text: 'Writing an abstract explaining what the data trends imply.', phase: 'visualisation' },
+            { id: 't10', text: 'Moving inactive project files into a cold-storage vault.', phase: 'archival' }
+        ];
+
+        let score = 0;
+        let draggedTaskId = null;
+
+        function init() {
+            renderPhases();
+            renderTasks();
+            updateProgress();
+        }
+
+        function renderPhases() {
+            const container = document.getElementById('lifecycle-zones');
+            container.innerHTML = phases.map(p => `
+                <div 
+                    class="drop-zone border-2 border-dashed border-slate-300 rounded-xl p-4 min-h-[140px] transition-all bg-white"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event, '${p.id}')"
+                >
+                    <h3 class="font-bold text-blue-700 text-sm mb-1 leading-tight">${p.title}</h3>
+                    <p class="text-[10px] text-slate-500 mb-3 leading-snug">${p.desc}</p>
+                    <div id="zone-${p.id}" class="space-y-2"></div>
+                </div>
+            `).join('');
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('task-container');
+            const shuffled = [...tasks].sort(() => Math.random() - 0.5);
+            container.innerHTML = shuffled.map(t => `
+                <div 
+                    id="${t.id}"
+                    draggable="true"
+                    ondragstart="handleDragStart(event)"
+                    class="draggable bg-white p-3 rounded-lg shadow-sm border border-slate-200 text-xs font-medium hover:shadow-md active:opacity-50"
+                >
+                    ${t.text}
+                </div>
+            `).join('');
+        }
+
+        function handleDragStart(e) {
+            draggedTaskId = e.target.id;
+            e.dataTransfer.setData('text/plain', e.target.id);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drop-zone-active');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drop-zone-active');
+        }
+
+        function handleDrop(e, phaseId) {
+            e.preventDefault();
+            const zone = e.currentTarget;
+            zone.classList.remove('drop-zone-active');
+            
+            const taskObj = tasks.find(t => t.id === draggedTaskId);
+            const taskEl = document.getElementById(draggedTaskId);
+
+            if (taskObj.phase === phaseId) {
+                score++;
+                taskEl.classList.add('correct');
+                taskEl.classList.remove('p-3', 'shadow-sm');
+                taskEl.classList.add('p-2', 'text-[11px]');
+                taskEl.setAttribute('draggable', 'false');
+                document.getElementById(`zone-${phaseId}`).appendChild(taskEl);
+                updateProgress();
+                showFeedback('Correct!', 'bg-green-500');
+            } else {
+                taskEl.classList.add('incorrect');
+                showFeedback('Try again!', 'bg-red-500');
+                setTimeout(() => {
+                    taskEl.classList.remove('incorrect');
+                }, 500);
+            }
+
+            if (score === tasks.length) {
+                document.getElementById('completion-modal').classList.remove('hidden');
+            }
+        }
+
+        function updateProgress() {
+            const percent = (score / tasks.length) * 100;
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('score-text').innerText = `${score} / ${tasks.length} Correct`;
+        }
+
+        function showFeedback(msg, colorClass) {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 ${colorClass} text-white px-4 py-2 rounded-lg shadow-lg transition-opacity duration-500 z-[100]`;
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 1000);
+        }
+
+        function resetGame() {
+            score = 0;
+            document.getElementById('completion-modal').classList.add('hidden');
+            init();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
