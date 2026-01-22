@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Types Classification Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .drop-zone-active { background-color: #f0f9ff; border-color: #0ea5e9; }
+        .draggable { cursor: grab; transition: transform 0.2s, opacity 0.2s; }
+        .draggable:active { cursor: grabbing; }
+        .correct { border: 2px solid #22c55e; background-color: #f0fdf4; }
+        .incorrect { border: 2px solid #ef4444; background-color: #fef2f2; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-extrabold text-slate-800 mb-4">Data Structures Explorer</h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                Can you distinguish between Cross-sectional, Time Series, and Panel data? Drag the scenarios to the correct bucket.
+            </p>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="mb-8 max-w-md mx-auto">
+            <div class="flex justify-between mb-2 text-sm font-medium">
+                <span>Mastery Progress</span>
+                <span id="score-text">0 / 9 Correct</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5">
+                <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-4 gap-8">
+            <!-- Left: Scenarios -->
+            <div class="lg:col-span-1">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">1</span>
+                    Scenarios
+                </h2>
+                <div id="task-container" class="space-y-3">
+                    <!-- Tasks will be injected here -->
+                </div>
+            </div>
+
+            <!-- Right: Data Type Zones -->
+            <div class="lg:col-span-3">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">2</span>
+                    Data Categories
+                </h2>
+                <div class="grid md:grid-cols-3 gap-6" id="type-zones">
+                    <!-- Categories will be injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Message -->
+        <div id="completion-modal" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md text-center">
+                <div class="text-5xl mb-4">📊</div>
+                <h2 class="text-2xl font-bold mb-2">Analysis Complete!</h2>
+                <p class="text-slate-600 mb-6">You successfully identified the differences between static snapshots, temporal trends, and longitudinal tracking.</p>
+                <button onclick="resetGame()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const types = [
+            { 
+                id: 'cross', 
+                title: 'Cross-sectional', 
+                desc: 'A "snapshot" of different subjects (people, firms, countries) at a single point in time.' 
+            },
+            { 
+                id: 'time', 
+                title: 'Time Series', 
+                desc: 'Observations of a single subject collected at regular intervals over time.' 
+            },
+            { 
+                id: 'panel', 
+                title: 'Panel (Longitudinal)', 
+                desc: 'Observations of multiple subjects tracked repeatedly over time.' 
+            }
+        ];
+
+        const scenarios = [
+            { id: 's1', text: 'A census recording the population of every city in the country in 2023.', type: 'cross' },
+            { id: 's2', text: 'Daily closing price of Apple stock over the last 10 years.', type: 'time' },
+            { id: 's3', text: 'Tracking the annual income of 5,000 specific households from 2010 to 2020.', type: 'panel' },
+            { id: 's4', text: 'Comparing the test scores of all Grade 10 students in a school today.', type: 'cross' },
+            { id: 's5', text: 'Monthly rainfall measurements at a single weather station since 1950.', type: 'time' },
+            { id: 's6', text: 'Quarterly GDP growth rates for 20 different countries over the past 5 years.', type: 'panel' },
+            { id: 's7', text: 'A survey of current customer satisfaction levels across 10 different retail branches.', type: 'cross' },
+            { id: 's8', text: 'A patient’s heart rate logged every minute during a 4-hour surgery.', type: 'time' },
+            { id: 's9', text: 'Health records of a group of twins monitored every 2 years from birth to age 18.', type: 'panel' }
+        ];
+
+        let score = 0;
+        let draggedId = null;
+
+        function init() {
+            renderTypes();
+            renderScenarios();
+            updateProgress();
+        }
+
+        function renderTypes() {
+            const container = document.getElementById('type-zones');
+            container.innerHTML = types.map(t => `
+                <div 
+                    class="drop-zone border-2 border-dashed border-slate-300 rounded-xl p-6 min-h-[250px] transition-all bg-white flex flex-col"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event, '${t.id}')"
+                >
+                    <h3 class="font-bold text-indigo-700 text-lg mb-2">${t.title}</h3>
+                    <p class="text-xs text-slate-500 mb-4 italic leading-relaxed">${t.desc}</p>
+                    <div id="zone-${t.id}" class="space-y-3 flex-grow"></div>
+                </div>
+            `).join('');
+        }
+
+        function renderScenarios() {
+            const container = document.getElementById('task-container');
+            const shuffled = [...scenarios].sort(() => Math.random() - 0.5);
+            container.innerHTML = shuffled.map(s => `
+                <div 
+                    id="${s.id}"
+                    draggable="true"
+                    ondragstart="handleDragStart(event)"
+                    class="draggable bg-white p-4 rounded-lg shadow-sm border border-slate-200 text-xs font-medium hover:border-indigo-300 hover:shadow-md active:opacity-50"
+                >
+                    ${s.text}
+                </div>
+            `).join('');
+        }
+
+        function handleDragStart(e) {
+            draggedId = e.target.id;
+            e.dataTransfer.setData('text/plain', e.target.id);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drop-zone-active');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drop-zone-active');
+        }
+
+        function handleDrop(e, typeId) {
+            e.preventDefault();
+            const zone = e.currentTarget;
+            zone.classList.remove('drop-zone-active');
+            
+            const scenarioObj = scenarios.find(s => s.id === draggedId);
+            const el = document.getElementById(draggedId);
+
+            if (scenarioObj.type === typeId) {
+                score++;
+                el.classList.add('correct');
+                el.classList.remove('p-4', 'shadow-sm');
+                el.classList.add('p-3', 'text-[11px]');
+                el.setAttribute('draggable', 'false');
+                document.getElementById(`zone-${typeId}`).appendChild(el);
+                updateProgress();
+                showFeedback('Correct Identification!', 'bg-green-500');
+            } else {
+                el.classList.add('incorrect');
+                showFeedback('Incorrect Category', 'bg-red-500');
+                setTimeout(() => {
+                    el.classList.remove('incorrect');
+                }, 500);
+            }
+
+            if (score === scenarios.length) {
+                document.getElementById('completion-modal').classList.remove('hidden');
+            }
+        }
+
+        function updateProgress() {
+            const percent = (score / scenarios.length) * 100;
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('score-text').innerText = `${score} / ${scenarios.length} Correct`;
+        }
+
+        function showFeedback(msg, colorClass) {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 ${colorClass} text-white px-4 py-2 rounded-lg shadow-lg transition-opacity duration-500 z-[100] font-bold`;
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 1000);
+        }
+
+        function resetGame() {
+            score = 0;
+            document.getElementById('completion-modal').classList.add('hidden');
+            init();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
