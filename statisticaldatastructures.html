@@ -1,0 +1,275 @@
+import React, { useState, useMemo } from 'react';
+import { 
+  Users, 
+  TrendingUp, 
+  Layers, 
+  Info, 
+  Table, 
+  LineChart as LineChartIcon, 
+  Database,
+  BarChart3,
+  ArrowRightLeft
+} from 'lucide-react';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  ScatterChart, 
+  Scatter,
+  ZAxis
+} from 'recharts';
+
+const App = () => {
+  const [activeTab, setActiveTab] = useState('cross-sectional');
+
+  // Sample Data for Cross-Sectional
+  const crossSectionalData = [
+    { unit: 'TechCorp', revenue: 450, employees: 1200, sector: 'Tech' },
+    { unit: 'BioLife', revenue: 320, employees: 850, sector: 'Healthcare' },
+    { unit: 'EduGrow', revenue: 150, employees: 400, sector: 'Education' },
+    { unit: 'RetailHub', revenue: 680, employees: 2100, sector: 'Retail' },
+    { unit: 'FinStream', revenue: 590, employees: 1100, sector: 'Finance' },
+  ];
+
+  // Sample Data for Time-Series
+  const timeSeriesData = [
+    { time: '2023-Q1', value: 400 },
+    { time: '2023-Q2', value: 450 },
+    { time: '2023-Q3', value: 420 },
+    { time: '2023-Q4', value: 500 },
+    { time: '2024-Q1', value: 580 },
+    { time: '2024-Q2', value: 620 },
+  ];
+
+  // Sample Data for Panel
+  const panelData = [
+    { time: '2021', Alice: 45, Bob: 40, Charlie: 55 },
+    { time: '2022', Alice: 52, Bob: 42, Charlie: 58 },
+    { time: '2023', Alice: 58, Bob: 48, Charlie: 52 },
+    { time: '2024', Alice: 65, Bob: 55, Charlie: 60 },
+  ];
+
+  const structures = {
+    'cross-sectional': {
+      title: 'Cross-Sectional',
+      icon: <Users className="w-5 h-5" />,
+      index: 'Unit (Entity)',
+      description: 'Observations of many subjects at a single point in time.',
+      question: 'How do different units differ from one another?',
+      example: 'A snapshot of 500 different schools in 2023 looking at test scores.',
+      modelling: 'Focuses on "between-unit" variation. Uses OLS regression or ANOVA.',
+      plotting: 'Bar charts, histograms, or scatter plots across units.',
+      storage: 'Primary key is the Unit ID. No duplicates allowed for units.'
+    },
+    'time-series': {
+      title: 'Time-Series',
+      icon: <TrendingUp className="w-5 h-5" />,
+      index: 'Time Point',
+      description: 'Observations of a single subject at multiple time intervals.',
+      question: 'How does this specific unit change over time?',
+      example: 'Daily closing price of Apple (AAPL) stock over the last year.',
+      modelling: 'Focuses on autocorrelation and trends. Uses ARIMA or Smoothing.',
+      plotting: 'Line charts focusing on the temporal sequence.',
+      storage: 'Primary key is the Timestamp. Sorting by time is critical.'
+    },
+    'panel': {
+      title: 'Panel (Longitudinal)',
+      icon: <Layers className="w-5 h-5" />,
+      index: 'Unit + Time',
+      description: 'Multiple subjects observed repeatedly over time.',
+      question: 'How do changes over time differ across units?',
+      example: 'Annual health data for 1,000 patients tracked over a decade.',
+      modelling: 'Focuses on Fixed Effects or Random Effects to control for unobserved unit traits.',
+      plotting: 'Spaghetti plots (multiple lines) or faceted charts.',
+      storage: 'Composite key (Unit ID + Time). Data is "long" or "wide" format.'
+    }
+  };
+
+  const current = structures[activeTab];
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-900">
+      <div className="max-w-6xl mx-auto space-y-6">
+        
+        {/* Header */}
+        <header className="text-center space-y-2 mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-800">Statistical Data Structures</h1>
+          <p className="text-slate-500 max-w-2xl mx-auto">
+            The way data is indexed determines how we can model it, plot it, and what questions we can answer.
+          </p>
+        </header>
+
+        {/* Navigation Tabs */}
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          {Object.entries(structures).map(([key, value]) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 font-medium ${
+                activeTab === key 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105' 
+                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              {value.icon}
+              {value.title}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Main Info Card */}
+          <div className="lg:col-span-1 space-y-4">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-full">
+              <div className="flex items-center gap-3 mb-4 text-blue-600">
+                <Info className="w-6 h-6" />
+                <h2 className="text-xl font-semibold">Structure Details</h2>
+              </div>
+              
+              <div className="space-y-6">
+                <div>
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Row Index (Key)</label>
+                  <p className="text-lg font-medium text-slate-800">{current.index}</p>
+                </div>
+                
+                <div>
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">The "Typical" Question</label>
+                  <p className="text-slate-700 italic">"{current.question}"</p>
+                </div>
+
+                <div className="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    <span className="font-semibold text-slate-800">Example:</span> {current.example}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Visualization Card */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3 text-emerald-600">
+                  <LineChartIcon className="w-6 h-6" />
+                  <h2 className="text-xl font-semibold">Visual Representation</h2>
+                </div>
+                <span className="text-xs font-medium px-2 py-1 bg-emerald-50 text-emerald-700 rounded-md">
+                  Mock Visualization
+                </span>
+              </div>
+              
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  {activeTab === 'cross-sectional' ? (
+                    <BarChart data={crossSectionalData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="unit" />
+                      <YAxis />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} 
+                      />
+                      <Bar dataKey="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Revenue ($M)" />
+                    </BarChart>
+                  ) : activeTab === 'time-series' ? (
+                    <LineChart data={timeSeriesData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="time" />
+                      <YAxis domain={['auto', 'auto']} />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="value" stroke="#10b981" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }} name="Metric Value" />
+                    </LineChart>
+                  ) : (
+                    <LineChart data={panelData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="time" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="Alice" stroke="#3b82f6" strokeWidth={2} />
+                      <Line type="monotone" dataKey="Bob" stroke="#10b981" strokeWidth={2} />
+                      <Line type="monotone" dataKey="Charlie" stroke="#f59e0b" strokeWidth={2} />
+                    </LineChart>
+                  )}
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Why Structure Matters Section */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-2 mb-3 text-indigo-600">
+                  <BarChart3 className="w-5 h-5" />
+                  <h3 className="font-bold">Plotting</h3>
+                </div>
+                <p className="text-sm text-slate-600">{current.plotting}</p>
+              </div>
+              
+              <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-2 mb-3 text-orange-600">
+                  <ArrowRightLeft className="w-5 h-5" />
+                  <h3 className="font-bold">Modeling</h3>
+                </div>
+                <p className="text-sm text-slate-600">{current.modelling}</p>
+              </div>
+
+              <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-2 mb-3 text-rose-600">
+                  <Database className="w-5 h-5" />
+                  <h3 className="font-bold">Storage</h3>
+                </div>
+                <p className="text-sm text-slate-600">{current.storage}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Comparison Table Footer */}
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
+            <Table className="w-5 h-5 text-slate-400" />
+            <span className="font-bold text-slate-700">Quick Comparison Table</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="bg-white border-b border-slate-100">
+                  <th className="p-4 font-semibold text-slate-900">Structure</th>
+                  <th className="p-4 font-semibold text-slate-900">Index</th>
+                  <th className="p-4 font-semibold text-slate-900">Variation Source</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                <tr className={activeTab === 'cross-sectional' ? 'bg-blue-50/50' : ''}>
+                  <td className="p-4 font-medium">Cross-Sectional</td>
+                  <td className="p-4 text-slate-600">Unit ($i$)</td>
+                  <td className="p-4 text-slate-600">Between Units</td>
+                </tr>
+                <tr className={activeTab === 'time-series' ? 'bg-blue-50/50' : ''}>
+                  <td className="p-4 font-medium">Time-Series</td>
+                  <td className="p-4 text-slate-600">Time ($t$)</td>
+                  <td className="p-4 text-slate-600">Within Unit (Over Time)</td>
+                </tr>
+                <tr className={activeTab === 'panel' ? 'bg-blue-50/50' : ''}>
+                  <td className="p-4 font-medium">Panel</td>
+                  <td className="p-4 text-slate-600">Unit + Time ($i, t$)</td>
+                  <td className="p-4 text-slate-600">Both Between & Within</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
