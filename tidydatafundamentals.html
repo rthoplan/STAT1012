@@ -31,55 +31,82 @@
 
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
-        <header class="mb-12">
+        <header class="mb-12 text-center">
             <h1 class="text-4xl font-bold mb-4">What is Tidy Data?</h1>
-            <p class="text-lg text-slate-600 leading-relaxed">
-                Tidy data is a standard way of mapping the structure of a dataset to its meaning. A dataset is "tidy" if its physical structure matches its logical structure, making it easy for computers to process and for humans to read.
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                Tidy data is a standard way of mapping the structure of a dataset to its meaning. A dataset is "tidy" if its physical structure matches its logical meaning.
             </p>
         </header>
 
         <!-- The Three Rules Section -->
         <section class="mb-16">
             <h2 class="text-2xl font-semibold mb-8 border-b pb-2">The Three Core Rules</h2>
-            <div class="space-y-6">
-                <div class="flex items-start bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="bg-blue-600 text-white font-bold rounded-lg w-8 h-8 flex items-center justify-center shrink-0 mr-4">1</div>
-                    <div>
-                        <h3 class="font-bold text-lg">Each variable forms a column.</h3>
-                        <p class="text-slate-600">A variable is an attribute you are measuring (like "Height," "Temperature," or "Date"). Each one gets its own dedicated column.</p>
-                    </div>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="bg-blue-600 text-white font-bold rounded-lg w-8 h-8 flex items-center justify-center mb-4">1</div>
+                    <h3 class="font-bold text-lg mb-2">Variables in Columns</h3>
+                    <p class="text-slate-600 text-sm">Every attribute (e.g., age, weight) gets its own column.</p>
                 </div>
 
-                <div class="flex items-start bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="bg-blue-600 text-white font-bold rounded-lg w-8 h-8 flex items-center justify-center shrink-0 mr-4">2</div>
-                    <div>
-                        <h3 class="font-bold text-lg">Each observation forms a row.</h3>
-                        <p class="text-slate-600">An observation is a single "event" or measurement. If you measure one person twice, that person should have two separate rows.</p>
-                    </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="bg-blue-600 text-white font-bold rounded-lg w-8 h-8 flex items-center justify-center mb-4">2</div>
+                    <h3 class="font-bold text-lg mb-2">Observations in Rows</h3>
+                    <p class="text-slate-600 text-sm">Every single event or measurement gets its own row.</p>
                 </div>
 
-                <div class="flex items-start bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="bg-blue-600 text-white font-bold rounded-lg w-8 h-8 flex items-center justify-center shrink-0 mr-4">3</div>
-                    <div>
-                        <h3 class="font-bold text-lg">Each type of observational unit forms a table.</h3>
-                        <p class="text-slate-600">Keep different levels of data separate. Don't mix data about a "Store" with data about a "Customer Purchase" in the same table.</p>
-                    </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="bg-blue-600 text-white font-bold rounded-lg w-8 h-8 flex items-center justify-center mb-4">3</div>
+                    <h3 class="font-bold text-lg mb-2">One Unit per Table</h3>
+                    <p class="text-slate-600 text-sm">Don't mix levels (like Store Info and Customer Data).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Common Messy Patterns -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-8 border-b pb-2">Common "Messy" Patterns</h2>
+            <p class="mb-6 text-slate-600">Spot these common issues to know when your data needs tidying:</p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Pattern 1 -->
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-2">1. Headers are Values</h4>
+                    <p class="text-sm text-slate-600 mb-3">Instead of a "Week" column, you have columns named "Week 1", "Week 2".</p>
+                    <code class="text-xs bg-white p-2 rounded block border">Bad: [ID, Week1, Week2]</code>
+                </div>
+
+                <!-- Pattern 2 -->
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-2">2. Multiple Variables in One</h4>
+                    <p class="text-sm text-slate-600 mb-3">Two measurements crammed into one cell (e.g., Height/Weight).</p>
+                    <code class="text-xs bg-white p-2 rounded block border">Bad: [User, H_W] -> [John, "170/65"]</code>
+                </div>
+
+                <!-- Pattern 3 -->
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-2">3. Variable Split Apart</h4>
+                    <p class="text-sm text-slate-600 mb-3">One variable is broken into pieces that should be together (e.g., Date parts).</p>
+                    <code class="text-xs bg-white p-2 rounded block border">Bad: [Day, Month, Year]</code>
+                </div>
+
+                <!-- Pattern 4 -->
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-2">4. Mixed Units</h4>
+                    <p class="text-sm text-slate-600 mb-3">Individual data mixed with summary data in the same list.</p>
+                    <code class="text-xs bg-white p-2 rounded block border">Bad: [Student_Score] + [Class_Average_Row]</code>
                 </div>
             </div>
         </section>
 
         <!-- Comparison Example -->
         <section class="mb-12">
-            <h2 class="text-2xl font-semibold mb-8 border-b pb-2">Example: Temperature Records</h2>
+            <h2 class="text-2xl font-semibold mb-8 border-b pb-2">Visualizing the Difference</h2>
             
             <div class="grid md:grid-cols-2 gap-8">
                 <!-- Untidy -->
                 <div>
                     <h3 class="text-red-600 font-bold mb-3 flex items-center text-sm uppercase">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                        </svg>
-                        Untidy Format
+                        Untidy Format (Headers are Values)
                     </h3>
                     <div class="bg-white rounded-lg border border-red-100 overflow-hidden shadow-sm">
                         <table class="data-table">
@@ -91,26 +118,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>London</td>
-                                    <td>15°C</td>
-                                    <td>12°C</td>
-                                </tr>
+                                <tr><td>London</td><td>15°C</td><td>12°C</td></tr>
                             </tbody>
                         </table>
                     </div>
-                    <p class="mt-3 text-sm text-slate-500">
-                        <strong>The Problem:</strong> The variable "Time" is hidden in the column names. The data (Morning/Evening) is acting as a header.
-                    </p>
                 </div>
 
                 <!-- Tidy -->
                 <div>
                     <h3 class="text-green-600 font-bold mb-3 flex items-center text-sm uppercase">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                        Tidy Format
+                        Tidy Format (Correct)
                     </h3>
                     <div class="bg-white rounded-lg border border-green-100 overflow-hidden shadow-sm">
                         <table class="data-table">
@@ -127,9 +144,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <p class="mt-3 text-sm text-slate-500">
-                        <strong>The Fix:</strong> "Time" and "Temp" are now distinct variables. Each row represents a single measurement.
-                    </p>
                 </div>
             </div>
         </section>
