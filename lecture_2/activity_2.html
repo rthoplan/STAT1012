@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage + Processing Decision Matrix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .scenario-card { transition: all 0.3s ease; }
+        .scenario-card:hover { transform: translateY(-2px); }
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.5em 1.5em;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="bg-slate-900 text-white p-6 rounded-t-xl shadow-lg flex items-center gap-4">
+            <div class="bg-blue-500 p-2 rounded-lg">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.58 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.58 4 8 4s8-1.79 8-4M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4m0 5c0 2.21-3.58 4-8 4s-8-1.79-8-4"></path></svg>
+            </div>
+            <h1 class="text-xl font-bold uppercase tracking-tight">Activity: Choose Storage + Processing</h1>
+        </header>
+
+        <div class="bg-white p-6 border-x border-b border-slate-200 rounded-b-xl shadow-sm space-y-8">
+            <p class="text-slate-600 font-medium">In groups, pick the best option for each scenario.</p>
+
+            <!-- Scenario List -->
+            <div class="space-y-6">
+                
+                <!-- Scenario A -->
+                <div class="scenario-card border border-slate-200 rounded-xl p-5 bg-white shadow-sm" id="scenario-A">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/3">
+                            <h2 class="text-lg font-bold text-slate-800 mb-1">A) Student club membership list</h2>
+                            <p class="text-sm text-slate-500 italic">50–200 members. Updated weekly. Need to email everyone.</p>
+                        </div>
+                        <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Storage Type</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="A" data-type="storage">
+                                    <option value="">-- Select --</option>
+                                    <option value="Files">Files (CSV/Excel)</option>
+                                    <option value="Database">Database (SQL)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Processing</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="A" data-type="processing">
+                                    <option value="">-- Select --</option>
+                                    <option value="Batch">Batch</option>
+                                    <option value="Stream">Stream</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="feedback-A" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                </div>
+
+                <!-- Scenario B -->
+                <div class="scenario-card border border-slate-200 rounded-xl p-5 bg-white shadow-sm" id="scenario-B">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/3">
+                            <h2 class="text-lg font-bold text-slate-800 mb-1">B) Campus bike sensors</h2>
+                            <p class="text-sm text-slate-500 italic">Counts bikes every minute from 50 locations. Need a live dashboard.</p>
+                        </div>
+                        <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Storage Type</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="B" data-type="storage">
+                                    <option value="">-- Select --</option>
+                                    <option value="Files">Files (CSV/Excel)</option>
+                                    <option value="Database">Database (SQL)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Processing</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="B" data-type="processing">
+                                    <option value="">-- Select --</option>
+                                    <option value="Batch">Batch</option>
+                                    <option value="Stream">Stream</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="feedback-B" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                </div>
+
+                <!-- Scenario C -->
+                <div class="scenario-card border border-slate-200 rounded-xl p-5 bg-white shadow-sm" id="scenario-C">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/3">
+                            <h2 class="text-lg font-bold text-slate-800 mb-1">C) Online shop transactions</h2>
+                            <p class="text-sm text-slate-500 italic">Thousands per day. Need reliable records and monthly reports.</p>
+                        </div>
+                        <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Storage Type</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="C" data-type="storage">
+                                    <option value="">-- Select --</option>
+                                    <option value="Files">Files (CSV/Excel)</option>
+                                    <option value="Database">Database (SQL)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Processing</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="C" data-type="processing">
+                                    <option value="">-- Select --</option>
+                                    <option value="Batch">Batch</option>
+                                    <option value="Stream">Stream</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="feedback-C" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                </div>
+
+                <!-- Scenario D -->
+                <div class="scenario-card border border-slate-200 rounded-xl p-5 bg-white shadow-sm" id="scenario-D">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/3">
+                            <h2 class="text-lg font-bold text-slate-800 mb-1">D) Museum digital photo archive</h2>
+                            <p class="text-sm text-slate-500 italic">100,000+ high-res images. Rarely updated. Used for backup and research.</p>
+                        </div>
+                        <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Storage Type</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="D" data-type="storage">
+                                    <option value="">-- Select --</option>
+                                    <option value="Files">Files (Cloud Storage/Folders)</option>
+                                    <option value="Database">Database (SQL)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Processing</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="D" data-type="processing">
+                                    <option value="">-- Select --</option>
+                                    <option value="Batch">Batch</option>
+                                    <option value="Stream">Stream</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="feedback-D" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                </div>
+
+                <!-- Scenario E -->
+                <div class="scenario-card border border-slate-200 rounded-xl p-5 bg-white shadow-sm" id="scenario-E">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/3">
+                            <h2 class="text-lg font-bold text-slate-800 mb-1">E) Credit card fraud detection</h2>
+                            <p class="text-sm text-slate-500 italic">Must block suspicious transactions in under 200ms.</p>
+                        </div>
+                        <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Storage Type</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="E" data-type="storage">
+                                    <option value="">-- Select --</option>
+                                    <option value="Files">Files (CSV/Excel)</option>
+                                    <option value="Database">Database (SQL)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Processing</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="E" data-type="processing">
+                                    <option value="">-- Select --</option>
+                                    <option value="Batch">Batch</option>
+                                    <option value="Stream">Stream</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="feedback-E" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                </div>
+
+                <!-- Scenario F -->
+                <div class="scenario-card border border-slate-200 rounded-xl p-5 bg-white shadow-sm" id="scenario-F">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/3">
+                            <h2 class="text-lg font-bold text-slate-800 mb-1">F) National election vote counting</h2>
+                            <p class="text-sm text-slate-500 italic">Millions of votes. High accuracy required. Results needed at end of day.</p>
+                        </div>
+                        <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Storage Type</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="F" data-type="storage">
+                                    <option value="">-- Select --</option>
+                                    <option value="Files">Files (CSV/Excel)</option>
+                                    <option value="Database">Database (SQL)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Processing</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="F" data-type="processing">
+                                    <option value="">-- Select --</option>
+                                    <option value="Batch">Batch</option>
+                                    <option value="Stream">Stream</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="feedback-F" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                </div>
+
+                <!-- Scenario G -->
+                <div class="scenario-card border border-slate-200 rounded-xl p-5 bg-white shadow-sm" id="scenario-G">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/3">
+                            <h2 class="text-lg font-bold text-slate-800 mb-1">G) Social Media Sentiment</h2>
+                            <p class="text-sm text-slate-500 italic">Analysing 'trending' hashtags to see public mood right now.</p>
+                        </div>
+                        <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Storage Type</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="G" data-type="storage">
+                                    <option value="">-- Select --</option>
+                                    <option value="Files">Files (CSV/Excel)</option>
+                                    <option value="Database">Database (SQL)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Processing</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="G" data-type="processing">
+                                    <option value="">-- Select --</option>
+                                    <option value="Batch">Batch</option>
+                                    <option value="Stream">Stream</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="feedback-G" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                </div>
+
+                <!-- Scenario H -->
+                <div class="scenario-card border border-slate-200 rounded-xl p-5 bg-white shadow-sm" id="scenario-H">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/3">
+                            <h2 class="text-lg font-bold text-slate-800 mb-1">H) Smart Grid Monitoring</h2>
+                            <p class="text-sm text-slate-500 italic">Detecting power surges across a nation to prevent blackouts.</p>
+                        </div>
+                        <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Storage Type</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="H" data-type="storage">
+                                    <option value="">-- Select --</option>
+                                    <option value="Files">Files (CSV/Excel)</option>
+                                    <option value="Database">Database (SQL)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Processing</label>
+                                <select class="choice-select w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50" data-id="H" data-type="processing">
+                                    <option value="">-- Select --</option>
+                                    <option value="Batch">Batch</option>
+                                    <option value="Stream">Stream</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="feedback-H" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                </div>
+
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="flex justify-between items-center border-t border-slate-100 pt-8">
+                <button onclick="location.reload()" class="text-slate-400 font-medium hover:text-slate-600 transition">Reset All</button>
+                <button onclick="checkAnswers()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition transform active:scale-95">Check Recommendations</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {
+            "A": {
+                storage: "Files",
+                processing: "Batch",
+                explanation: "Small, static dataset (50-200 rows) updated infrequently. A CSV or Spreadsheet is cost-effective and easy to manage."
+            },
+            "B": {
+                storage: "Database",
+                processing: "Stream",
+                explanation: "Requires live dashboards and high-velocity processing for minute-by-minute updates."
+            },
+            "C": {
+                storage: "Database",
+                processing: "Batch",
+                explanation: "Requires ACID compliance for financial reliability. While transactions are constant, business reporting is usually periodic (monthly)."
+            },
+            "D": {
+                storage: "Files",
+                processing: "Batch",
+                explanation: "Large binary files (images) are best stored in a file system or cloud bucket. Processing is usually performed in bulk for search indexing or backup."
+            },
+            "E": {
+                storage: "Database",
+                processing: "Stream",
+                explanation: "Millisecond response times require streaming analytics against a fast database to verify identity and patterns."
+            },
+            "F": {
+                storage: "Database",
+                processing: "Batch",
+                explanation: "Integrity and complex counting queries require a relational database. Since final counts are the goal, processing is typically batch-oriented at the end of the day."
+            },
+            "G": {
+                storage: "Database",
+                processing: "Stream",
+                explanation: "A database is required for querying trends, and streaming allows for 'right now' detection of public mood."
+            },
+            "H": {
+                storage: "Database",
+                processing: "Stream",
+                explanation: "National infrastructure requires instant detection (Stream) to prevent physical damage, backed by a robust database for continuous monitoring."
+            }
+        };
+
+        function checkAnswers() {
+            let complete = true;
+            ["A", "B", "C", "D", "E", "F", "G", "H"].forEach(id => {
+                const storageSelect = document.querySelector(`[data-id="${id}"][data-type="storage"]`);
+                const processingSelect = document.querySelector(`[data-id="${id}"][data-type="processing"]`);
+                const feedback = document.getElementById(`feedback-${id}`);
+
+                if (!storageSelect.value || !processingSelect.value) {
+                    complete = false;
+                    return;
+                }
+
+                const correctStorage = storageSelect.value === answers[id].storage;
+                const correctProcessing = processingSelect.value === answers[id].processing;
+
+                feedback.classList.remove('hidden', 'bg-green-50', 'bg-orange-50', 'text-green-700', 'text-orange-700');
+                
+                if (correctStorage && correctProcessing) {
+                    feedback.classList.add('bg-green-50', 'text-green-700');
+                    feedback.innerHTML = `<strong>Optimal Choice!</strong><br>${answers[id].explanation}`;
+                } else {
+                    feedback.classList.add('bg-orange-50', 'text-orange-700');
+                    feedback.innerHTML = `<strong>Alternative View:</strong> Most industry standards would suggest <strong>${answers[id].storage}</strong> and <strong>${answers[id].processing}</strong>. <br><span class="opacity-80">${answers[id].explanation}</span>`;
+                }
+            });
+
+            if (!complete) {
+                alert("Please make a selection for all scenarios.");
+            }
+        }
+    </script>
+</body>
+</html>
