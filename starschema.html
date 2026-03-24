@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLAP Interactive Learning Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .cube-container {
+            perspective: 1000px;
+        }
+        .cube {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+        .face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+        }
+        .front  { transform: translateZ(50px); }
+        .back   { transform: rotateY(180deg) translateZ(50px); }
+        .right  { transform: rotateY(90deg) translateZ(50px); }
+        .left   { transform: rotateY(-90deg) translateZ(50px); }
+        .top    { transform: rotateX(90deg) translateZ(50px); }
+        .bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+        .active-op {
+            background-color: #3b82f6 !important;
+            color: white !important;
+            border-color: #2563eb !important;
+        }
+        
+        .schema-card {
+            transition: all 0.3s ease;
+        }
+        .reveal-hidden {
+            filter: blur(8px);
+            pointer-events: none;
+            user-select: none;
+        }
+        .reveal-btn {
+            transition: all 0.2s;
+        }
+        .reveal-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900 pb-20">
+
+    <nav class="bg-slate-900 text-white p-6 shadow-lg mb-8">
+        <div class="container mx-auto">
+            <h1 class="text-2xl font-bold">TechGear Retail: Data Journey</h1>
+            <p class="text-slate-400 text-sm">From Raw Data to Multidimensional Insights</p>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 space-y-16">
+        
+        <!-- Step 1: The Raw Data & Context -->
+        <section id="data-intro">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-indigo-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">1</div>
+                    <h2 class="text-2xl font-bold text-slate-800">The Context: Modern Retail Data</h2>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
+                    <p class="text-slate-600 mb-4 leading-relaxed">
+                        Imagine you are the manager of <strong>TechGear</strong>, a global electronics retailer. Every time a customer buys a product, a row is added to your database. This "Raw Data" contains everything: the product, the location, the time, and the revenue generated.
+                    </p>
+                    <div class="overflow-x-auto border rounded-xl">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="p-3 text-slate-500">Transaction_ID</th>
+                                    <th class="p-3 text-slate-500">Timestamp</th>
+                                    <th class="p-3 text-slate-500">Location</th>
+                                    <th class="p-3 text-slate-500">Item_Name</th>
+                                    <th class="p-3 text-slate-500">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y font-mono text-xs">
+                                <tr><td class="p-3">#TXN-001</td><td class="p-3">2026-01-12 14:20</td><td class="p-3">London, UK</td><td class="p-3">MacBook Air M3</td><td class="p-3 text-green-600">£1,099</td></tr>
+                                <tr><td class="p-3">#TXN-002</td><td class="p-3">2026-01-12 15:45</td><td class="p-3">Birmingham, UK</td><td class="p-3">iPhone 15 Pro</td><td class="p-3 text-green-600">£999</td></tr>
+                                <tr><td class="p-3">#TXN-003</td><td class="p-3">2026-02-05 09:10</td><td class="p-3">London, UK</td><td class="p-3">iPad Pro</td><td class="p-3 text-green-600">£799</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 flex gap-4 items-start">
+                    <span class="text-2xl">💡</span>
+                    <p class="text-sm text-indigo-800">
+                        <strong>The Challenge:</strong> This list is excellent for receipts, but inefficient for business questions like <em>"Which city had the best growth in Laptop sales this quarter?"</em> To answer that, we <strong>organise</strong> it into a <strong>Star Schema</strong>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 2: Identification Challenge -->
+        <section id="identification-section">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">2</div>
+                    <h2 class="text-2xl font-bold text-slate-800">Identification Challenge</h2>
+                </div>
+                
+                <p class="text-slate-600 mb-8">Based on the data above, can you identify the structure of our analytic schema? Click the buttons to reveal the correct components.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+                    <!-- Dim 1 -->
+                    <div class="relative group">
+                        <div id="dim1" class="schema-card bg-white p-6 rounded-xl border-2 border-slate-200 text-center reveal-hidden">
+                            <h3 class="font-bold text-blue-600 mb-2">Dim_Product</h3>
+                            <ul class="text-xs text-slate-500 space-y-1">
+                                <li>PK: Product_ID</li>
+                                <li>Category</li>
+                                <li>Brand</li>
+                            </ul>
+                        </div>
+                        <button onclick="reveal('dim1')" class="reveal-btn absolute inset-0 m-auto w-32 h-10 bg-blue-500 text-white rounded-lg font-bold shadow-lg">Dimension 1</button>
+                    </div>
+
+                    <!-- Fact Table (Centre) -->
+                    <div class="md:col-span-2 relative">
+                        <div id="fact-table" class="schema-card bg-slate-900 text-white p-8 rounded-2xl border-4 border-blue-500 shadow-xl relative reveal-hidden">
+                            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 px-3 py-1 rounded-full text-xs font-bold">FACT TABLE</div>
+                            <h3 class="text-center text-xl font-bold mb-4">Sales_Fact</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-slate-800 p-3 rounded-lg">
+                                    <p class="text-[10px] uppercase text-slate-400 mb-1">Foreign Keys</p>
+                                    <ul class="text-xs font-mono space-y-1">
+                                        <li>FK_Product</li>
+                                        <li>FK_Store</li>
+                                        <li>FK_Time</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-slate-800 p-3 rounded-lg">
+                                    <p class="text-[10px] uppercase text-slate-400 mb-1">Measure</p>
+                                    <ul class="text-xs font-mono">
+                                        <li class="text-green-400 font-bold">Total_Revenue (£)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="reveal('fact-table')" class="reveal-btn absolute inset-0 m-auto w-40 h-12 bg-slate-800 text-white border-2 border-blue-400 rounded-lg font-bold shadow-2xl">The Fact Table</button>
+                    </div>
+
+                    <!-- Dim 2 & 3 -->
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <div id="dim2" class="schema-card bg-white p-5 rounded-xl border-2 border-slate-200 text-center reveal-hidden">
+                                <h3 class="font-bold text-blue-600 mb-1">Dim_Store</h3>
+                                <p class="text-[10px] text-slate-400 uppercase">PK: Store_ID, City, Region</p>
+                            </div>
+                            <button onclick="reveal('dim2')" class="reveal-btn absolute inset-0 m-auto w-32 h-8 bg-blue-500 text-white rounded-lg text-xs font-bold shadow-md">Dimension 2</button>
+                        </div>
+                        <div class="relative">
+                            <div id="dim3" class="schema-card bg-white p-5 rounded-xl border-2 border-slate-200 text-center reveal-hidden">
+                                <h3 class="font-bold text-blue-600 mb-1">Dim_Time</h3>
+                                <p class="text-[10px] text-slate-400 uppercase">PK: Date_ID, Month, Year</p>
+                            </div>
+                            <button onclick="reveal('dim3')" class="reveal-btn absolute inset-0 m-auto w-32 h-8 bg-blue-500 text-white rounded-lg text-xs font-bold shadow-md">Dimension 3</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: Interactive Operations -->
+        <section id="operations-section">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-green-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">3</div>
+                <h2 class="text-2xl font-bold text-slate-800 uppercase tracking-wider">OLAP Cube Simulator</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Control Panel -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                    <div>
+                        <h3 class="font-bold text-slate-700 mb-3 border-b pb-2">Aggregation Level</h3>
+                        <div class="flex gap-2">
+                            <button onclick="applyOp('roll-up')" id="btn-roll-up" class="flex-1 py-2 px-3 border rounded-lg text-sm hover:bg-slate-50 transition">Roll-Up</button>
+                            <button onclick="applyOp('drill-down')" id="btn-drill-down" class="flex-1 py-2 px-3 border rounded-lg text-sm hover:bg-slate-50 transition active-op">Drill-Down</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-slate-700 mb-3 border-b pb-2">Filtering & View</h3>
+                        <div class="flex gap-2">
+                            <button onclick="applyOp('slice')" id="btn-slice" class="flex-1 py-2 px-3 border rounded-lg text-sm hover:bg-slate-50 transition">Slice</button>
+                            <button onclick="applyOp('dice')" id="btn-dice" class="flex-1 py-2 px-3 border rounded-lg text-sm hover:bg-slate-50 transition">Dice</button>
+                        </div>
+                    </div>
+
+                    <div class="p-5 bg-green-50 rounded-xl border border-green-100">
+                        <h4 id="concept-title" class="font-bold text-green-800 text-sm mb-1 uppercase">Concept Explorer</h4>
+                        <p id="concept-body" class="text-xs text-green-700 leading-relaxed italic">Select an operation above to see how we manipulate the data cube.</p>
+                    </div>
+                </div>
+
+                <!-- Display Area -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Cube Visual -->
+                    <div class="bg-slate-100 h-48 rounded-2xl flex items-center justify-center cube-container overflow-hidden border border-slate-200">
+                        <div class="cube" id="data-cube">
+                            <div class="face front">City</div>
+                            <div class="face back">Sales</div>
+                            <div class="face right">Product</div>
+                            <div class="face left">Region</div>
+                            <div class="face top">Time</div>
+                            <div class="face bottom">Brand</div>
+                        </div>
+                    </div>
+
+                    <!-- Result Table -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Cube Perspective</span>
+                            <span id="record-count" class="text-[10px] bg-slate-200 px-2 py-0.5 rounded-full font-mono">12 Records</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm" id="data-table">
+                                <thead class="bg-slate-50 text-slate-500 font-medium">
+                                    <tr id="table-head">
+                                        <th class="p-4">Time</th>
+                                        <th class="p-4">City</th>
+                                        <th class="p-4">Product</th>
+                                        <th class="p-4 text-right">Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y" id="table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const rawData = [
+            { time: 'January', city: 'London', product: 'Laptop', revenue: 12000 },
+            { time: 'January', city: 'London', product: 'Phone', revenue: 8000 },
+            { time: 'January', city: 'Birmingham', product: 'Laptop', revenue: 15000 },
+            { time: 'January', city: 'Birmingham', product: 'Phone', revenue: 9500 },
+            { time: 'February', city: 'London', product: 'Laptop', revenue: 11000 },
+            { time: 'February', city: 'London', product: 'Phone', revenue: 7500 },
+            { time: 'February', city: 'Birmingham', product: 'Laptop', revenue: 14000 },
+            { time: 'February', city: 'Birmingham', product: 'Phone', revenue: 10000 },
+            { time: 'March', city: 'London', product: 'Laptop', revenue: 13000 },
+            { time: 'March', city: 'London', product: 'Phone', revenue: 8500 },
+            { time: 'March', city: 'Birmingham', product: 'Laptop', revenue: 16000 },
+            { time: 'March', city: 'Birmingham', product: 'Phone', revenue: 11000 },
+        ];
+
+        function reveal(id) {
+            const el = document.getElementById(id);
+            const btn = el.nextElementSibling;
+            el.classList.remove('reveal-hidden');
+            btn.style.display = 'none';
+        }
+
+        const explanations = {
+            'roll-up': {
+                title: 'Roll-Up (Going Up)',
+                body: 'Summarising daily or monthly data into a higher level, like a "Quarterly" view. This reduces detail but provides a broader overview.',
+                example: 'Summarising sales for Jan, Feb, and March into Q1 2026.'
+            },
+            'drill-down': {
+                title: 'Drill-Down (Going Deeper)',
+                body: 'The opposite of roll-up. Moving from summary data to detailed granular transactions.',
+                example: 'Expanding "Electronics" category to see "Laptops", "Phones", and "Tablets".'
+            },
+            'slice': {
+                title: 'Slice (Single View)',
+                body: 'Selecting one specific member of a dimension to focus on.',
+                example: 'Viewing data for JUST "London" across all products and time periods.'
+            },
+            'dice': {
+                title: 'Dice (Sub-cube)',
+                body: 'Selecting specific members from two or more dimensions simultaneously.',
+                example: 'Viewing data for "London" AND "Phones" only.'
+            }
+        };
+
+        function renderData(op) {
+            const tbody = document.getElementById('table-body');
+            const countLabel = document.getElementById('record-count');
+            const cube = document.getElementById('data-cube');
+            tbody.innerHTML = '';
+            
+            let displayData = [...rawData];
+
+            if (op === 'roll-up') {
+                const total = rawData.reduce((acc, curr) => acc + curr.revenue, 0);
+                displayData = [{ time: 'Q1 (Jan-Mar)', city: 'All Cities', product: 'All Products', revenue: total }];
+                cube.style.transform = 'scale(1.2) rotateX(20deg) rotateY(20deg)';
+            } else if (op === 'slice') {
+                displayData = rawData.filter(d => d.city === 'London');
+                cube.style.transform = 'scale(1) rotateY(-90deg)';
+            } else if (op === 'dice') {
+                displayData = rawData.filter(d => d.city === 'London' && d.product === 'Phone');
+                cube.style.transform = 'scale(0.8) rotateX(45deg) rotateY(45deg)';
+            } else {
+                cube.style.transform = 'rotateX(-20deg) rotateY(-20deg)';
+            }
+
+            displayData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-4 font-medium">${row.time}</td>
+                    <td class="p-4 text-slate-500">${row.city}</td>
+                    <td class="p-4 text-slate-500">${row.product}</td>
+                    <td class="p-4 font-mono font-bold text-green-600 text-right">£${row.revenue.toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            countLabel.innerText = `${displayData.length} Records Found`;
+            document.getElementById('concept-title').innerText = explanations[op].title;
+            document.getElementById('concept-body').innerHTML = `<strong>Definition:</strong> ${explanations[op].body}<br><br><strong>Example:</strong> ${explanations[op].example}`;
+        }
+
+        function applyOp(op) {
+            document.querySelectorAll('[id^="btn-"]').forEach(btn => btn.classList.remove('active-op'));
+            document.getElementById(`btn-${op}`).classList.add('active-op');
+            renderData(op);
+        }
+
+        window.onload = () => {
+            renderData('drill-down');
+        };
+    </script>
+</body>
+</html>
